@@ -35,7 +35,7 @@ func (m *Stacker) Init() tea.Cmd {
 }
 
 func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var batch tea.Cmd = nil
+	var batch tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
