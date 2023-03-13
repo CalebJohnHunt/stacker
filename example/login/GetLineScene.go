@@ -23,7 +23,7 @@ func (g *GetLineScene) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch key := msg.String(); key {
 		case "enter":
-			return g, sw.PopScene(string(g.line))
+			return g, sw.PopScene()
 		case "backspace":
 			g.line = g.line[:len(g.line)-1]
 		default:

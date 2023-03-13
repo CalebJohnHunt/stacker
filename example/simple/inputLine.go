@@ -21,7 +21,7 @@ func (i *inputLine) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
-			return i, sw.PopScene(string(i.input))
+			return i, sw.PopScene()
 		case "backspace":
 			i.input = i.input[:len(i.input)-1]
 		default:

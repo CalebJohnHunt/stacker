@@ -50,3 +50,9 @@ on top or "pop" itself off of the stack.
 **TODO**  
 This API is not even close to functioning yet. I think it can be used, but I also wouldn't be surprised
 if I've neglected to export a useful/necessary function.
+
+## Todo
+
++ [X] Return the model when the scene is popped
++ [ ] Push a scene which, when popped, will not alert the pusher; or perhaps popping can be silent... That sounds easier
++ [ ] Put stackers on stackers

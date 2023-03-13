@@ -19,7 +19,7 @@ func (d *displayTextModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return d, sw.AddSceneNoCallback(&displayTextModel{d.text + string('a'+((d.text[len(d.text)-1]+1-'a')%26))})
 	}
 	if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" {
-		return d, sw.PopScene(nil)
+		return d, sw.PopScene()
 	}
 	return d, nil
 }

@@ -15,10 +15,6 @@ type Login struct {
 	err       error
 }
 
-type usernameAndPassword struct {
-	usernameAndPassword string
-}
-
 type successfullyLoggedIn struct {
 	authToken string
 }
@@ -27,16 +23,15 @@ type failedLogin struct{}
 type tryAgain struct{}
 
 func (m *Login) Init() tea.Cmd {
-	return sw.AddSceneSimpleSetter(&GetLineScene{prompt: "Enter username and password"},
-		func(u *usernameAndPassword, s string) { u.usernameAndPassword = s })
+	return sw.AddScene(&GetLineScene{prompt: "Enter username and password"})
 }
 
 func (m *Login) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var batch tea.Cmd
 	switch msg := msg.(type) {
-	case usernameAndPassword:
+	case *GetLineScene:
 		batch = tea.Batch(batch, func() tea.Msg {
-			authToken := login(msg.usernameAndPassword)
+			authToken := login(string(msg.line))
 			if len(authToken) != 0 {
 				return successfullyLoggedIn{authToken}
 			}
@@ -53,8 +48,7 @@ func (m *Login) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		})
 	case tryAgain:
 		m.err = nil
-		batch = tea.Batch(batch, sw.AddSceneSimpleSetter(&GetLineScene{prompt: "Try logging in again"},
-			func(u *usernameAndPassword, s string) { u.usernameAndPassword = s }))
+		batch = tea.Batch(batch, sw.AddScene(&GetLineScene{prompt: "Try logging in again"}))
 	}
 	return m, batch
 }

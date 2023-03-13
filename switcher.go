@@ -4,38 +4,29 @@ import tea "github.com/charmbracelet/bubbletea"
 
 func NewSwitcher(m tea.Model) tea.Model {
 	return &Stacker{
-		stack: []Scene{{m, nil}}}
+		stack: []tea.Model{m}}
 }
 
 type pushSceneMsg struct {
-	scene Scene
+	model tea.Model
 }
 
 type popSceneMsg struct {
-	data any
 }
-
-type Scene struct {
-	model    tea.Model
-	callback cb
-}
-
-type cb func(any) tea.Cmd
 
 type Stacker struct {
-	stack []Scene
+	stack []tea.Model
 }
 
 func (s *Stacker) Peek() tea.Model {
-	return s.stack[len(s.stack)-1].model
+	return s.stack[len(s.stack)-1]
 }
 
 func (m *Stacker) Init() tea.Cmd {
-	return m.stack[len(m.stack)-1].model.Init()
+	return m.stack[len(m.stack)-1].Init()
 }
 
 func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var batch tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -43,57 +34,34 @@ func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case pushSceneMsg:
-		batch = tea.Batch(msg.scene.model.Init())
-		m.stack = append(m.stack, Scene{msg.scene.model, msg.scene.callback})
+		m.stack = append(m.stack, msg.model)
+		return m, msg.model.Init()
 	case popSceneMsg:
 		curScene := m.stack[len(m.stack)-1]
 		m.stack = m.stack[:len(m.stack)-1]
-		if curScene.callback != nil {
-			batch = tea.Batch(batch, curScene.callback(msg.data))
-		}
+		return m, func() tea.Msg { return curScene }
 	}
 	var b tea.Cmd
-	m.stack[len(m.stack)-1].model, b = m.stack[len(m.stack)-1].model.Update(msg)
-	batch = tea.Batch(batch, b)
-	return m, batch
+	m.stack[len(m.stack)-1], b = m.stack[len(m.stack)-1].Update(msg)
+	return m, b
 }
 
 func (m *Stacker) View() string {
-	return m.stack[len(m.stack)-1].model.View()
+	return m.stack[len(m.stack)-1].View()
 }
 
-func AddScene(m tea.Model, callback cb) tea.Cmd {
+func AddScene(m tea.Model) tea.Cmd {
 	return func() tea.Msg {
-		return pushSceneMsg{Scene{m, callback}}
+		return pushSceneMsg{m}
 	}
 }
 
 func AddSceneNoCallback(m tea.Model) tea.Cmd {
-	return func() tea.Msg {
-		return pushSceneMsg{Scene{m, nil}}
-	}
+	panic("Not implemented. Perhaps we have a scene{tea.model, options}")
 }
 
-func AddSceneSimpleSetter[T, MsgT any](m tea.Model, setter func(*MsgT, T)) tea.Cmd {
+func PopScene() tea.Cmd {
 	return func() tea.Msg {
-		return pushSceneMsg{Scene{m, SimpleSetterCallback(setter)}}
-	}
-}
-
-func PopScene(data any) tea.Cmd {
-	return func() tea.Msg {
-		return popSceneMsg{data}
-	}
-}
-
-func SimpleSetterCallback[T, MsgT any](setter func(*MsgT, T)) cb {
-	s := new(MsgT)
-	return func(data any) tea.Cmd {
-		if d, ok := data.(T); ok {
-			setter(s, d)
-		}
-		return func() tea.Msg {
-			return *s
-		}
+		return popSceneMsg{}
 	}
 }
