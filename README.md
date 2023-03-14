@@ -54,5 +54,5 @@ if I've neglected to export a useful/necessary function.
 ## Todo
 
 + [X] Return the model when the scene is popped
-+ [ ] Push a scene which, when popped, will not alert the pusher; or perhaps popping can be silent... That sounds easier
++ [X] Push a scene which, when popped, will not alert the pusher; or perhaps popping can be silent... That sounds easier
 + [ ] Put stackers on stackers

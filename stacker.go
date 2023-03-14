@@ -12,6 +12,7 @@ type pushSceneMsg struct {
 }
 
 type popSceneMsg struct {
+	silent bool
 }
 
 type Stacker struct {
@@ -39,6 +40,9 @@ func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case popSceneMsg:
 		curScene := m.stack[len(m.stack)-1]
 		m.stack = m.stack[:len(m.stack)-1]
+		if msg.silent {
+			return m, nil
+		}
 		return m, func() tea.Msg { return curScene }
 	}
 	var b tea.Cmd
@@ -56,12 +60,14 @@ func AddScene(m tea.Model) tea.Cmd {
 	}
 }
 
-func AddSceneNoCallback(m tea.Model) tea.Cmd {
-	panic("Not implemented. Perhaps we have a scene{tea.model, options}")
-}
-
 func PopScene() tea.Cmd {
 	return func() tea.Msg {
 		return popSceneMsg{}
+	}
+}
+
+func PopSceneSilent() tea.Cmd {
+	return func() tea.Msg {
+		return popSceneMsg{silent: true}
 	}
 }

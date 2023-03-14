@@ -16,10 +16,10 @@ func (d *displayTextModel) Init() tea.Cmd { return nil }
 
 func (d *displayTextModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "enter" {
-		return d, sw.AddSceneNoCallback(&displayTextModel{d.text + string('a'+((d.text[len(d.text)-1]+1-'a')%26))})
+		return d, sw.AddScene(&displayTextModel{text: d.text + string('a'+((d.text[len(d.text)-1]+1-'a')%26))})
 	}
 	if msg, ok := msg.(tea.KeyMsg); ok && msg.String() == "esc" {
-		return d, sw.PopScene()
+		return d, sw.PopSceneSilent()
 	}
 	return d, nil
 }

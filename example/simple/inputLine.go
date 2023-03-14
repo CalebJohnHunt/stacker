@@ -9,7 +9,8 @@ import (
 )
 
 type inputLine struct {
-	input []rune
+	input  []rune
+	silent bool
 }
 
 func (i *inputLine) Init() tea.Cmd {
@@ -21,6 +22,9 @@ func (i *inputLine) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
+			if i.silent {
+				return i, sw.PopSceneSilent()
+			}
 			return i, sw.PopScene()
 		case "backspace":
 			i.input = i.input[:len(i.input)-1]
