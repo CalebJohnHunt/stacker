@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	tea.NewProgram(sw.NewSwitcher(&model1{name: "a"})).Run()
+	tea.NewProgram(sw.NewStacker(&model1{name: "a"})).Run()
 }

@@ -12,9 +12,9 @@ import (
 func main() {
 	fmt.Println("Let's log in!")
 	time.Sleep(time.Second)
-	m, err := tea.NewProgram(sw.NewSwitcher(&Login{})).Run()
+	_, err := tea.NewProgram(sw.NewStacker(&Login{})).Run()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Successfully logged in! And got auth token: %s\n", m.(*sw.Stacker).Peek().(*Login).authToken)
+	fmt.Printf("Successfully logged in!")
 }

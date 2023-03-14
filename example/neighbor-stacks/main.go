@@ -64,6 +64,6 @@ func (l *lister) View() string {
 
 func main() {
 	l := lister{
-		list: []tea.Model{sw.NewSwitcher(&displayTextModel{"hello"}), sw.NewSwitcher(&displayTextModel{"world"})}}
+		list: []tea.Model{sw.NewStacker(&displayTextModel{"hello"}), sw.NewStacker(&displayTextModel{"world"})}}
 	tea.NewProgram(&l).Run()
 }

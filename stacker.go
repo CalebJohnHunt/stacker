@@ -2,7 +2,7 @@ package stacker
 
 import tea "github.com/charmbracelet/bubbletea"
 
-func NewSwitcher(m tea.Model) tea.Model {
+func NewStacker(m tea.Model) tea.Model {
 	return &Stacker{
 		stack: []tea.Model{m}}
 }
@@ -17,10 +17,6 @@ type popSceneMsg struct {
 
 type Stacker struct {
 	stack []tea.Model
-}
-
-func (s *Stacker) Peek() tea.Model {
-	return s.stack[len(s.stack)-1]
 }
 
 func (m *Stacker) Init() tea.Cmd {
