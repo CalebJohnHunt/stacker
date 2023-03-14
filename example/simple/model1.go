@@ -26,7 +26,7 @@ func (m *model1) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "i":
 			return m, sw.AddScene(&inputLine{})
 		case "I":
-			return m, sw.AddSceneNoCallback(&inputLine{}) // This shouldn't return the model
+			return m, sw.AddScene(&inputLine{silent: true}) // This shouldn't return the model
 		case "ctrl+p":
 			return m, sw.PopScene()
 		}
