@@ -3,6 +3,9 @@ package stacker
 import tea "github.com/charmbracelet/bubbletea"
 
 func NewStacker(m tea.Model) tea.Model {
+	if m == nil {
+		return nil
+	}
 	return &Stacker{
 		stack: []tea.Model{m}}
 }
@@ -11,8 +14,26 @@ type pushSceneMsg struct {
 	model tea.Model
 }
 
+func AddScene(m tea.Model) tea.Cmd {
+	return func() tea.Msg {
+		return pushSceneMsg{m}
+	}
+}
+
 type popSceneMsg struct {
 	silent bool
+}
+
+func PopScene() tea.Cmd {
+	return func() tea.Msg {
+		return popSceneMsg{}
+	}
+}
+
+func PopSceneSilent() tea.Cmd {
+	return func() tea.Msg {
+		return popSceneMsg{silent: true}
+	}
 }
 
 type Stacker struct {
@@ -25,15 +46,16 @@ func (m *Stacker) Init() tea.Cmd {
 
 func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "ctrl+c":
-			return m, tea.Quit
-		}
 	case pushSceneMsg:
 		m.stack = append(m.stack, msg.model)
 		return m, msg.model.Init()
 	case popSceneMsg:
+		// TODO:
+		// If this stack is on a stack, it should somehow only pop itself...
+		// I don't think it's possible with the current API/structs/etc.
+		if len(m.stack) == 1 {
+			return m, tea.Quit
+		}
 		curScene := m.stack[len(m.stack)-1]
 		m.stack = m.stack[:len(m.stack)-1]
 		if msg.silent {
@@ -48,22 +70,4 @@ func (m *Stacker) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *Stacker) View() string {
 	return m.stack[len(m.stack)-1].View()
-}
-
-func AddScene(m tea.Model) tea.Cmd {
-	return func() tea.Msg {
-		return pushSceneMsg{m}
-	}
-}
-
-func PopScene() tea.Cmd {
-	return func() tea.Msg {
-		return popSceneMsg{}
-	}
-}
-
-func PopSceneSilent() tea.Cmd {
-	return func() tea.Msg {
-		return popSceneMsg{silent: true}
-	}
 }
