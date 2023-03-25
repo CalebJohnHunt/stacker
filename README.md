@@ -45,11 +45,54 @@ Stacker is a framework to place "scenes" on top of each other. The "stacker" man
 of scenes. Only the top scene is shown and receives updates. The top-most scene can "push" a new scene
 on top or "pop" itself off of the stack.
 
+## Basic Usage
+
+```go
+/* main.go */
+import "github.com/CalebJohnHunt/stacker"
+
+type myModel struct{}
+
+func (m myModel) Init() tea.Cmd {
+  // This func will be called when the model is placed on top of the stack
+  return nil
+}
+
+func (m myModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+  switch msg := msg.(type) {
+  case tea.KeyMsg:
+    switch msg.String() {
+    case "enter": // push new scene
+      return m, stacker.AddNewScene(myModel{})
+    case "esc": // pop current scene
+      return m, stacker.PopScene()
+    }
+  case myModel: // A previously pushed scene popped itself and now we're top-of-stack!
+    // ... do something with myModel
+    return m, nil
+  }
+  return m, nil
+}
+
+func (m myModel) View() string {
+  // This model's view will be used when it is on top of the stack
+  return "View of myModel"
+}
+
+func main() {
+  // make stacker with your model as the lowest layer
+  tea.NewProgram(stacker.NewStacker(myModel{})).Run()
+}
+```
+
 ## API
 
-**TODO**  
-This API is not even close to functioning yet. I think it can be used, but I also wouldn't be surprised
-if I've neglected to export a useful/necessary function.
+| API                           | Explanation |
+|:------------------------------|:--|
+| `NewStacker(tea.Model)`       | Create a new stacker with your `tea.Model` as the bottom layer. |
+| `AddScene(tea.Model) tea.Cmd` | Push a new scene (model) onto the stack. This means the current model won't be shown and won't receive updates (until the pushed scene pops itself) |
+| `PopScene() tea.Cmd`          | Pop the current scene and provide it to the new top-of-stack scene. This is done by way of `tea.Msg`. See the [basic usage](#basic-usage) for an example. |
+| `PopSceneSilent() tea.Cmd`    | Pop the current scene but do not provide any indication to the new top-of-stack scene. |
 
 ## Todo
 
